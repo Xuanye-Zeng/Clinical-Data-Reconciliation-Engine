@@ -18,10 +18,10 @@ export default function App() {
           Clinical Data Reconciliation Engine
         </p>
         <h1 className="mb-3 text-3xl font-bold tracking-tight text-slate-900 md:text-4xl">
-          EHR Integration Take-Home Starter
+          AI-Assisted EHR Reconciliation Dashboard
         </h1>
         <p className="max-w-3xl text-sm leading-6 text-slate-600 md:text-base">
-          This initial version gives you a working API shell and a simple dashboard for manual testing.
+          Review conflicting medication records, validate patient record quality, and inspect structured AI-assisted recommendations.
         </p>
       </header>
 

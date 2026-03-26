@@ -1,3 +1,9 @@
+"""Medication reconciliation route.
+
+Thin HTTP layer: validates the request via Pydantic, checks the API key,
+and delegates all business logic to reconciliation_service.
+"""
+
 from fastapi import APIRouter, Depends
 
 from app.api.deps.auth import require_api_key

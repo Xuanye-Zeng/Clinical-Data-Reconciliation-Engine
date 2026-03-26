@@ -1,3 +1,5 @@
+"""Pydantic models for the data quality validation endpoint."""
+
 from datetime import date
 
 from pydantic import BaseModel, Field
@@ -24,6 +26,7 @@ class DataQualityRequest(BaseModel):
 
 
 class ScoreBreakdown(BaseModel):
+    """Per-dimension quality scores (each 0-100)."""
     completeness: int
     accuracy: int
     timeliness: int
@@ -31,9 +34,10 @@ class ScoreBreakdown(BaseModel):
 
 
 class QualityIssue(BaseModel):
+    """A single detected data quality issue."""
     field: str
     issue: str
-    severity: str
+    severity: str  # "low", "medium", or "high"
 
 
 class DataQualityResponse(BaseModel):

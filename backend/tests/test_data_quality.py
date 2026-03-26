@@ -1,3 +1,9 @@
+"""Tests for the data quality validation rule engine.
+
+Covers implausible vital signs detection, stale record handling,
+and unexpected demographic value handling.
+"""
+
 from datetime import date
 
 from app.models.data_quality import DataQualityRequest, Demographics, VitalSigns
@@ -5,6 +11,7 @@ from app.services.data_quality_service import validate_data_quality
 
 
 def test_data_quality_flags_implausible_blood_pressure():
+    """Blood pressure 340/180 should be flagged as physiologically implausible."""
     payload = DataQualityRequest(
         demographics=Demographics(name="John Doe", dob=date(1955, 3, 15), gender="M"),
         medications=["Metformin 500mg"],
@@ -21,6 +28,7 @@ def test_data_quality_flags_implausible_blood_pressure():
 
 
 def test_data_quality_flags_stale_records_when_last_updated_missing():
+    """Missing last_updated should result in low timeliness and a flagged issue."""
     payload = DataQualityRequest(
         demographics=Demographics(name="John Doe", dob=date(1955, 3, 15), gender="M"),
         medications=["Metformin 500mg"],
@@ -37,6 +45,7 @@ def test_data_quality_flags_stale_records_when_last_updated_missing():
 
 
 def test_data_quality_reduces_accuracy_for_unexpected_gender_value():
+    """Non-standard gender value should reduce accuracy and flag the issue."""
     payload = DataQualityRequest(
         demographics=Demographics(name="John Doe", dob=date(1955, 3, 15), gender="UnknownCode"),
         medications=["Metformin 500mg"],

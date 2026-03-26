@@ -1,3 +1,9 @@
+"""FastAPI application entry point.
+
+Registers CORS middleware, mounts the reconciliation and data quality
+routers, and exposes a /health endpoint for basic liveness checks.
+"""
+
 import logging
 
 from fastapi import FastAPI

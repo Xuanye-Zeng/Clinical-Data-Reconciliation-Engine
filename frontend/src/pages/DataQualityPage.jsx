@@ -1,3 +1,7 @@
+// Data quality validation page.
+// Lets the user load a sample patient record or type their own JSON,
+// submit it to POST /api/validate/data-quality, and view the result.
+
 import { useState } from "react";
 
 import JsonEditor from "../components/JsonEditor";
@@ -23,7 +27,7 @@ export default function DataQualityPage() {
   async function handleSubmit() {
     setIsLoading(true);
     setError("");
-    setResult(null);
+    setResult(null); // Clear stale result so it doesn't linger alongside a new error
 
     try {
       const payload = JSON.parse(payloadText);

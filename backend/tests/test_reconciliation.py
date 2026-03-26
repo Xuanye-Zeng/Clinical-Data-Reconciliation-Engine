@@ -1,3 +1,9 @@
+"""Tests for the medication reconciliation rule engine.
+
+Covers source ranking, clinical context adjustments, safety checks,
+input validation, and edge cases around eGFR type handling.
+"""
+
 from datetime import date
 
 import pytest
@@ -8,6 +14,7 @@ from app.services.reconciliation_service import reconcile_medication
 
 
 def test_reconcile_prefers_recent_high_reliability_record():
+    """When two sources have the same reliability, the more recent one should win."""
     payload = ReconcileMedicationRequest(
         patient_context=PatientContext(age=67, conditions=["Hypertension"], recent_labs={"eGFR": 60}),
         sources=[
@@ -33,6 +40,7 @@ def test_reconcile_prefers_recent_high_reliability_record():
 
 
 def test_reconcile_marks_review_for_high_dose_with_low_egfr():
+    """High-dose metformin + low eGFR should trigger a REVIEW safety check."""
     payload = ReconcileMedicationRequest(
         patient_context=PatientContext(age=67, conditions=["Diabetes"], recent_labs={"eGFR": 40}),
         sources=[
@@ -52,6 +60,7 @@ def test_reconcile_marks_review_for_high_dose_with_low_egfr():
 
 
 def test_reconcile_request_requires_at_least_one_source():
+    """Pydantic should reject a request with an empty sources list."""
     with pytest.raises(ValidationError):
         ReconcileMedicationRequest(
             patient_context=PatientContext(age=67, conditions=["Hypertension"], recent_labs={"eGFR": 60}),
@@ -60,6 +69,7 @@ def test_reconcile_request_requires_at_least_one_source():
 
 
 def test_reconcile_handles_string_egfr_without_crashing():
+    """eGFR sent as a string (e.g. "40") should still be interpreted correctly."""
     payload = ReconcileMedicationRequest(
         patient_context=PatientContext(age=67, conditions=["Diabetes"], recent_labs={"eGFR": "40"}),
         sources=[
@@ -79,6 +89,7 @@ def test_reconcile_handles_string_egfr_without_crashing():
 
 
 def test_reconcile_handles_non_numeric_egfr_gracefully():
+    """Garbage eGFR like "not-a-number" should be ignored, not crash the request."""
     payload = ReconcileMedicationRequest(
         patient_context=PatientContext(age=67, conditions=["Diabetes"], recent_labs={"eGFR": "not-a-number"}),
         sources=[
@@ -93,5 +104,6 @@ def test_reconcile_handles_non_numeric_egfr_gracefully():
 
     result = reconcile_medication(payload)
 
+    # Without valid eGFR, clinical context adjustment is skipped -> safety check PASSED
     assert result.clinical_safety_check == "PASSED"
     assert result.reconciled_medication == "Metformin 1000mg twice daily"

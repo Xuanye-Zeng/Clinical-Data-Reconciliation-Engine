@@ -1,3 +1,5 @@
+"""Application settings loaded from environment variables with sensible defaults."""
+
 from dataclasses import dataclass
 import os
 

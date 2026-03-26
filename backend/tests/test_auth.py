@@ -1,3 +1,8 @@
+"""Tests for API key authentication.
+
+Verifies that protected endpoints reject missing/wrong keys and accept correct ones.
+"""
+
 from fastapi.testclient import TestClient
 
 from app.main import app

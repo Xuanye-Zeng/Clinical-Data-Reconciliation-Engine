@@ -1,3 +1,7 @@
+// Root application component.
+// Uses a simple tab-based layout to switch between the two main flows:
+// medication reconciliation and data quality validation.
+
 import { useState } from "react";
 
 import DataQualityPage from "./pages/DataQualityPage";

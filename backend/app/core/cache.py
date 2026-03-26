@@ -1,3 +1,10 @@
+"""Simple in-memory TTL cache for LLM responses.
+
+Used to avoid repeated inference for identical prompts. Each entry
+expires after a configurable TTL (default 1 hour). Expired entries
+are evicted lazily on the next get() call.
+"""
+
 import time
 from dataclasses import dataclass
 from typing import Any

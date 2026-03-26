@@ -1,7 +1,12 @@
+// Sample payloads for the demo UI.
+// Each case is designed to trigger different reconciliation or data quality behaviors.
+
 export const reconcileCases = [
   {
     id: "renal-dose-adjustment",
     label: "Renal Dose Adjustment",
+    // This case has conflicting metformin doses with low eGFR.
+    // Expected: 500mg should win because of clinical context adjustment.
     payload: {
       patient_context: {
         age: 67,
@@ -33,6 +38,8 @@ export const reconcileCases = [
   {
     id: "recent-pharmacy-fill",
     label: "Recent Pharmacy Fill",
+    // Aspirin dosing conflict. No clinical context to influence scoring,
+    // so recency and reliability should drive the decision.
     payload: {
       patient_context: {
         age: 54,
@@ -64,6 +71,8 @@ export const reconcileCases = [
   {
     id: "mixed-source-conflict",
     label: "Mixed Source Conflict",
+    // Includes a low-reliability patient portal source that contradicts
+    // two high-reliability clinical sources.
     payload: {
       patient_context: {
         age: 72,
@@ -98,6 +107,8 @@ export const dataQualityCases = [
   {
     id: "implausible-vitals",
     label: "Implausible Vitals",
+    // Blood pressure 340/180 is physiologically impossible.
+    // Should trigger a high-severity clinical plausibility issue.
     payload: {
       demographics: {
         name: "John Doe",
@@ -117,6 +128,7 @@ export const dataQualityCases = [
   {
     id: "stale-record",
     label: "Stale Record",
+    // last_updated is over a year old. Should flag timeliness issues.
     payload: {
       demographics: {
         name: "Maria Chen",
@@ -136,6 +148,8 @@ export const dataQualityCases = [
   {
     id: "missing-fields",
     label: "Missing Fields",
+    // Missing name, dob, medications, allergies, conditions, and last_updated.
+    // Should score poorly on completeness and timeliness.
     payload: {
       demographics: {
         name: null,

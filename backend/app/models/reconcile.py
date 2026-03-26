@@ -1,3 +1,5 @@
+"""Pydantic models for the medication reconciliation endpoint."""
+
 from datetime import date
 from typing import Any
 
@@ -7,10 +9,12 @@ from pydantic import BaseModel, Field
 class PatientContext(BaseModel):
     age: int | None = None
     conditions: list[str] = Field(default_factory=list)
+    # dict[str, Any] because lab values may be numeric or string
     recent_labs: dict[str, Any] = Field(default_factory=dict)
 
 
 class MedicationSource(BaseModel):
+    """A single medication record from one healthcare system."""
     system: str
     medication: str
     last_updated: date | None = None

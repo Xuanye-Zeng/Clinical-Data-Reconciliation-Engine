@@ -1,4 +1,13 @@
+// Unified result display component.
+// Automatically switches between ReconciliationView and DataQualityView
+// based on the shape of the response data. Falls back to raw JSON for
+// unexpected shapes.
+
 import { useMemo, useState } from "react";
+
+// --- Tone mapping helpers ---
+// Map status/severity strings to visual tones (success/warning/danger)
+// which then map to Tailwind color classes via getPillClass.
 
 function getStatusTone(value) {
   const normalized = String(value || "").toLowerCase();
@@ -52,6 +61,8 @@ function getSeverityTone(value) {
   return "neutral";
 }
 
+// --- Sub-components ---
+
 function ScoreBadge({ label, value }) {
   const tone = value >= 80 ? "success" : value >= 60 ? "warning" : "danger";
 
@@ -65,6 +76,8 @@ function ScoreBadge({ label, value }) {
   );
 }
 
+// --- Reconciliation result view ---
+
 function ReconciliationView({ data }) {
   const [decision, setDecision] = useState("");
   const confidencePercent = Math.round((data.confidence_score || 0) * 100);
@@ -72,6 +85,7 @@ function ReconciliationView({ data }) {
 
   return (
     <div className="grid gap-4">
+      {/* Header: reconciled medication + confidence */}
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <p className="mb-1 text-xs font-semibold uppercase tracking-[0.08em] text-slate-500">Most likely truth</p>
@@ -83,10 +97,12 @@ function ReconciliationView({ data }) {
         </div>
       </div>
 
+      {/* Confidence bar */}
       <div className="h-3 w-full overflow-hidden rounded-full bg-slate-200" aria-hidden="true">
         <div className="h-full rounded-full bg-gradient-to-r from-blue-600 to-teal-500" style={{ width: `${confidencePercent}%` }} />
       </div>
 
+      {/* Safety check + decision badges */}
       <div className="flex flex-wrap gap-3">
         <span className={`inline-flex items-center rounded-full px-3 py-1.5 text-sm font-semibold ${getPillClass(safetyTone)}`}>
           Safety check: {data.clinical_safety_check}
@@ -98,11 +114,13 @@ function ReconciliationView({ data }) {
         ) : null}
       </div>
 
+      {/* Reasoning */}
       <div className="grid gap-2">
         <h4 className="text-sm font-semibold text-slate-900">Why this decision?</h4>
         <p className="text-sm leading-6 text-slate-700">{data.reasoning}</p>
       </div>
 
+      {/* Recommended actions */}
       <div className="grid gap-2">
         <h4 className="text-sm font-semibold text-slate-900">Recommended actions</h4>
         <ul className="list-disc space-y-2 pl-5 text-sm leading-6 text-slate-700">
@@ -112,6 +130,7 @@ function ReconciliationView({ data }) {
         </ul>
       </div>
 
+      {/* Approve / reject (session-only, not persisted) */}
       <div className="grid gap-2">
         <div className="flex flex-wrap gap-3">
           <button
@@ -139,6 +158,8 @@ function ReconciliationView({ data }) {
   );
 }
 
+// --- Data quality result view ---
+
 function DataQualityView({ data }) {
   const breakdownEntries = [
     ["Completeness", data.breakdown.completeness],
@@ -149,6 +170,7 @@ function DataQualityView({ data }) {
 
   return (
     <div className="grid gap-4">
+      {/* Header: overall score + status badge */}
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <p className="mb-1 text-xs font-semibold uppercase tracking-[0.08em] text-slate-500">Overall data quality</p>
@@ -163,12 +185,14 @@ function DataQualityView({ data }) {
         </span>
       </div>
 
+      {/* Four-dimension breakdown */}
       <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
         {breakdownEntries.map(([label, value]) => (
           <ScoreBadge key={label} label={label} value={value} />
         ))}
       </div>
 
+      {/* Detected issues list */}
       <div className="grid gap-2">
         <h4 className="text-sm font-semibold text-slate-900">Detected issues</h4>
         {data.issues_detected.length ? (
@@ -197,7 +221,10 @@ function DataQualityView({ data }) {
   );
 }
 
+// --- Main ResultCard ---
+
 export default function ResultCard({ title, data, error }) {
+  // Infer which view to render based on response shape
   const viewType = useMemo(() => {
     if (!data) {
       return "empty";

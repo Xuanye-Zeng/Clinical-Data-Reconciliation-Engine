@@ -1,3 +1,8 @@
+"""Tests for the in-memory TTL cache.
+
+Covers cache miss, cache hit, and TTL-based expiry behavior.
+"""
+
 import time
 
 from app.core.cache import TTLCache
@@ -18,6 +23,7 @@ def test_cache_expires_after_ttl(monkeypatch):
     cache = TTLCache()
     cache.set("key", "value", ttl_seconds=10)
 
+    # Simulate time passing beyond the TTL
     future = time.time() + 11
     monkeypatch.setattr(time, "time", lambda: future)
 

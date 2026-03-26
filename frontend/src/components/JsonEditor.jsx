@@ -1,3 +1,7 @@
+// JSON payload editor component.
+// Shows a textarea for editing raw JSON, a "Load demo payload" button,
+// and optional preset case chips for quick switching between sample payloads.
+
 export default function JsonEditor({ label, value, onChange, onLoadSample, presetCases = [], activeCaseId, onSelectCase }) {
   return (
     <section className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-slate-200">

@@ -2,8 +2,6 @@
 
 A mini full-stack app that reconciles conflicting medication records across healthcare systems, scores patient data quality, and presents the results in a clinician-facing dashboard.
 
-Built for the Full Stack Developer - EHR Integration Intern take-home assessment.
-
 ## Quick start
 
 ### 1. Ollama (local LLM)
@@ -109,3 +107,4 @@ See `backend/.env.example` and `frontend/.env.example` for all available setting
 
 - The first local inference can be noticeably slow while the model loads into memory. Subsequent calls are faster and benefit from in-memory caching.
 - If Ollama is not running, the app still works -- you just get the rule-based output without LLM-enhanced explanations.
+
